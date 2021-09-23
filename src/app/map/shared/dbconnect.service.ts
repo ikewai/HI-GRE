@@ -10,7 +10,7 @@ export class DBConnectService {
 
   static readonly TOKEN_FILE = "/assets/APIToken.txt"
   static readonly MAX_URI = 2000;
-  static readonly MAX_POINTS = 10000;
+  static readonly MAX_POINTS = 500;
 
   tokenReader: FileReader;
 
@@ -179,9 +179,9 @@ export class DBConnectService {
         return Observable.throw(new Error(e.message));
       })
     );
-    
+
     return response;
-    
+
 
     interface ResponseResults {
       result: any

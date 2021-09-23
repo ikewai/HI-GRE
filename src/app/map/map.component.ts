@@ -177,7 +177,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
   undoStack: any[];
   redoStack: any[];
-  
+
 
 
   //static baseStyle: any;
@@ -306,7 +306,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
     //thinking I like the collapsed version with this stuff
     this.layers = L.control.layers({ "Satellite Image": empty }, null).addTo(this.map)
-    
+
     let layerControl = this.map._controlContainer.children[1];
     layerControl.style.visibility = "hidden";
 
@@ -503,7 +503,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           break;
         //can use fallthrough to have any recharge layers have the same behavior
         case "Recharge Rate":
-          
+
           this.mapService.changeLayer(this, "recharge");
           this.drawControl.remove();
           //console.log(this.metrics.total);
@@ -515,7 +515,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           else {
             this.nameModeDetails.oldInteractionType = "full";
           }
-          
+
           //throw errors for some reason if run immediately
           //possible that event goes through before layer fully swapped, so run on a delay
           setTimeout(() => {
@@ -679,7 +679,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     return this.generateGeometriesFromPoints(componentIndices);
   }
 
-  
+
   private parseAndAddShapes(shapes: any, nameProperty: string) {
 
     let args = {
@@ -710,16 +710,16 @@ export class MapComponent implements OnInit, AfterContentInit {
       shapes.features.forEach((shape, i) => {
         //deepcopy so don't mess up original object when swapping coordinates
         let coordsBase = shape.geometry.coordinates;
-  
+
         //allow for custom property to be defined
         //default is name
         let name = shape.properties[nameProperty];
-  
+
         //swap coordinates, who wants consistent standards anyway?
         //different formats have different numbers of nested arrays, recursively swap values in bottom level arrays
         let polyCoords = this.swapCoordinates(coordsBase);
-  
-  
+
+
         let last = i == shapes.features.length - 1;
         //this should handle multipolygons fine, actually
         precomputedIndices.layer = indices.breakdown[i].internal;
@@ -730,7 +730,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     });
 
 
-  
+
     // let indices = this.getInternalIndices(this.drawnItems.toGeoJSON(), {});
     // let customTotal = this.getMetricsSuite(indices.internal, true);
     // this.metrics.customAreasTotal.metrics = customTotal;
@@ -785,7 +785,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         });
 
       });
-      
+
       //reload layer from changes
       this.loadCover(this.types.landCover, false);
       resolve();
@@ -803,7 +803,7 @@ export class MapComponent implements OnInit, AfterContentInit {
             let y = recordBase.y;
             let index = this.getIndex(x, y);
 
-            //might contain points not changed, 
+            //might contain points not changed,
             //coverage reassignment completed first, so use this value (covData[index]) to get index in db results
             let mappedType = covData[index];
 
@@ -824,7 +824,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         this.updateMetrics(lcShapes);
         this.loadRechargeStyle(this.types.recharge.style);
       });
-      
+
     }, (error) => {
       //restore land cover on failure
       backupData.forEach((value, i) => {
@@ -873,7 +873,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         this.mapService.updateSelect(this, 0, 0);
         this.addCellInteraction();
         break;
-      }  
+      }
       case "custom": {
         this.forceObjectsShow();
         if(this.baseLayer.name == "Recharge Rate") {
@@ -927,7 +927,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         this.drawControl.addTo(this.map);
       }
       this.setMode(this.nameModeDetails.oldInteractionType);
-      
+
     }
     else {
       this.forceObjectsShow();
@@ -938,7 +938,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         selectedShape: null
       }
       this.interactionType = "name";
-  
+
       this.drawnItems.eachLayer((layer) => {
         layer.setStyle(unhighlight);
         layer.on('click', (e) => {
@@ -951,7 +951,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         });
       });
     }
-    
+
   }
 
   registerNameToShape(name: string) {
@@ -1040,7 +1040,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           //console.log(indices);
           this.mapService.updateMetrics(this, "aquifer", metrics);
         }
-        
+
         this.mapService.updateSelect(this, this.types.aquifers.layer.getLayers().length, highlightedAquifers.length);
       });
     });
@@ -1198,7 +1198,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   }
 
   // private getSelectedCellMetrics(index: number) {
-    
+
   // }
 
   private getSelectedShapeMetrics() {
@@ -1276,7 +1276,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     let pause = 1000;
 
     let startLoad = new Date().getTime();
-    
+
     let loadDataArrayFromASC = (data) => {
       let details = data.split('\n');
       let dataArray = []
@@ -1285,7 +1285,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         //get data values after first six detail lines
         //split on spaces, tabs, or commas for values
         dataArray = dataArray.concat(details[i].trim().split(/[ \t,]+/));
-        
+
         //if whitespace at the end might reult in whitespace only element, remove these
         if(dataArray[dataArray.length - 1].trim() == "") {
           dataArray.splice(dataArray.length - 1, 1);
@@ -1293,7 +1293,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       }
       return dataArray;
     };
-    
+
     //if still slow can add pauses within these sub-funtions
     //this is still slow, should modify some
     //load current data, needed for metric computations
@@ -1304,7 +1304,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           let xs = coverage._covjson.domain.axes.x.values;
           let ys = coverage._covjson.domain.axes.y.values;
           //console.log(coverage)
-    
+
           //find which value's the minimum, assumes oredered values
           //subtract 37.5 since centroid of 75m cell
           __this.xmin = Math.min(xs[0], xs[xs.length - 1]) - 37.5;
@@ -1312,12 +1312,12 @@ export class MapComponent implements OnInit, AfterContentInit {
           //get range + 75 to account for cell width
           __this.xrange = Math.abs(xs[0] - xs[xs.length - 1]) + 75
           __this.yrange = Math.abs(ys[0] - ys[ys.length - 1]) + 75;
-          
-    
+
+
           __this.gridWidthCells = xs.length;
           //console.log(xs.length);
           __this.gridHeightCells = ys.length;
-    
+
           __this.types.landCover.data = coverage;
           //deepcopy values for comparisons with modified types, array of primitives, so can use array.from
           __this.types.landCover.baseData = Array.from(coverage._covjson.ranges.cover.values);
@@ -1326,7 +1326,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         }),
 
         this.http.get(MapComponent.caprockFiles.caprockGridFile).toPromise(),
-    
+
         //load aquifer grid
         this.http.get(MapComponent.aquiferFiles.aquiferGridFile).toPromise(),
 
@@ -1335,10 +1335,10 @@ export class MapComponent implements OnInit, AfterContentInit {
           __this.types.recharge.baseData[__this.currentScenario] = Array.from(coverage._covjson.ranges.recharge.values);
           //deepcopy so not messed up when data swapped
           __this.types.recharge.currentData[__this.currentScenario] = Array.from(coverage._covjson.ranges.recharge.values);
-    
+
           //set up data, recharge layer, and metrics based on these values
           __this.types.recharge.data = coverage;
-          
+
         })
       ];
 
@@ -1354,7 +1354,7 @@ export class MapComponent implements OnInit, AfterContentInit {
               //deepcopy values for comparisons with modified types
               __this.types.recharge.baseData[scenario] = Array.from(coverage._covjson.ranges.recharge.values);
               //deepcopy so not messed up when data swapped
-              __this.types.recharge.currentData[scenario] = Array.from(coverage._covjson.ranges.recharge.values);     
+              __this.types.recharge.currentData[scenario] = Array.from(coverage._covjson.ranges.recharge.values);
             });
           }
         });
@@ -1437,7 +1437,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         }, () => {
           this.dialog.open(MessageDialogComponent, {data: {message: "An error occured while initializing application data. Please refresh the page or notify a site administrator if this issue persists.", type: "Error"}});
         });
-      }, pause); 
+      }, pause);
       return Promise.all(workerPromises).then((data) => {
         this.caprock = data[0];
         this.aquifers = data[1];
@@ -1518,7 +1518,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         break;
       }
       case "update": {
-        
+
         break;
       }
     }
@@ -1575,7 +1575,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       }
     }
 
-    
+
 
   }
 
@@ -1618,7 +1618,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     let rechargeData = this.types.recharge.data._covjson.ranges.recharge.values;
     let min = Number.POSITIVE_INFINITY;
     let max = Number.NEGATIVE_INFINITY;
-      
+
     switch(style) {
       case "rate": {
         this.types.recharge.style = "rate";
@@ -1650,9 +1650,9 @@ export class MapComponent implements OnInit, AfterContentInit {
         break;
       }
       case "pchange": {
-        
+
         this.types.recharge.style = "pchange";
-        
+
         for(let i = 0; i < rechargeData.length; i++) {
           //make sure not dividing by 0 if no recharge in cell
           if(this.types.recharge.baseData[this.baseScenario][i] == 0) {
@@ -1744,7 +1744,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         }
       }
     }
-    
+
     this.report.emit(data);
   }
 
@@ -1787,17 +1787,17 @@ export class MapComponent implements OnInit, AfterContentInit {
         roundedMetrics: {}
       }
     };
-    
+
     this.getAquiferAndTotalMetrics(data);
 
-    
-    
+
+
     let geojsonFeatures = {
       features: []
     };
-    
+
     this.drawnItems.eachLayer((layer) => {
-      
+
       //let intervals = new Date().getTime();
       //any custom layers should have metrics object registered with customAreaMap, use this as a base since same name
       let info = this.customAreaMap[layer._leaflet_id];
@@ -1854,7 +1854,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
   getAquiferAndTotalMetrics(data: any) {
 
-    let metrics: any = {}; 
+    let metrics: any = {};
 
     //initialize metrics objects
     Object.keys(AQUIFER_NAME_MAP).forEach((code) => {
@@ -1997,7 +1997,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     };
 
     let rechargeVals = this.types.recharge.currentData[this.currentScenario];
-    
+
     //this.aquifers will be the aquifer id array
     //this.SPECIAL_AQUIFERS
     /*
@@ -2038,7 +2038,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         }
         case 2: {
           let aquifer = this.aquifers[i];
-          
+
           metrics[aquifer].caprock.USC.area++;
           metrics[aquifer].caprock.USC.average.current += rechargeVals[i];
           metrics[aquifer].caprock.USC.average.original += this.types.recharge.baseData[this.baseScenario][i];
@@ -2117,13 +2117,13 @@ export class MapComponent implements OnInit, AfterContentInit {
         metrics[code].caprock.Metric.volumetric.pchange = metrics[code].caprock.Metric.volumetric.diff / metrics[code].caprock.Metric.volumetric.original * 100;
         metrics[code].caprock.Metric.average.pchange = metrics[code].caprock.Metric.average.diff / metrics[code].caprock.Metric.average.original * 100;
       }
-      
-      
+
+
       //get square miles
       metrics[code].caprock.USC.area *= Math.pow(75 * MapComponent.METER_TO_MILE_FACTOR, 2);
       //square kilometers
       metrics[code].caprock.Metric.area *= Math.pow(75 / 1000, 2);
-      
+
       if(!MapComponent.SPECIAL_AQUIFERS.includes(code)) {
         //nocaprock only if not special aquifers
         //currently just number of cells, no need conversion
@@ -2173,9 +2173,9 @@ export class MapComponent implements OnInit, AfterContentInit {
       }
     });
 
-    
 
-    
+
+
 
     let codes = Object.keys(AQUIFER_NAME_MAP);
     //sort geographically by aquifer code
@@ -2282,7 +2282,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       if(lcVals[i] == 0) {
         return false;
       }
-      
+
       if(caprock) {
         return true;
       }
@@ -2302,7 +2302,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           cells++;
           metrics.USC.average.current += rechargeVals[i];
           metrics.USC.average.original += this.types.recharge.baseData[this.baseScenario][i];
-          
+
           metrics.Metric.average.current += rechargeVals[i] * MapComponent.INCH_TO_MILLIMETER_FACTOR;
           metrics.Metric.average.original += this.types.recharge.baseData[this.baseScenario][i] * MapComponent.INCH_TO_MILLIMETER_FACTOR;
         }
@@ -2322,9 +2322,9 @@ export class MapComponent implements OnInit, AfterContentInit {
           metrics.Metric.average.original += this.types.recharge.baseData[this.baseScenario][index] * MapComponent.INCH_TO_MILLIMETER_FACTOR;
         }
       });
-    
+
     }
-    
+
     //compute metrics in volumetric
     metrics.USC.volumetric.original = (metrics.USC.average.original * 75 * 75 * 144) / (231 * 0.3048 * 0.3048 * 365 * 1000000);
     metrics.USC.volumetric.current = (metrics.USC.average.current * 75 * 75 * 144) / (231 * 0.3048 * 0.3048 * 365 * 1000000);
@@ -2406,7 +2406,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     };
 
     this.highlightedAquiferIndices = [];
-    
+
     //if empty just return all 0 metrics
     if(codes.length != 0) {
       let rechargeVals = this.types.recharge.currentData[this.currentScenario];
@@ -2467,7 +2467,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         metrics.Metric.volumetric.pchange = metrics.Metric.volumetric.diff / metrics.Metric.volumetric.original * 100;
         metrics.Metric.average.pchange = metrics.Metric.average.diff / metrics.Metric.average.original * 100;
       }
-      
+
       //get square miles
       metrics.USC.area *= Math.pow(75 * MapComponent.METER_TO_MILE_FACTOR, 2);
       //square kilometers
@@ -2622,7 +2622,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         this.includeCaprock ? this.mapService.updateMetrics(this, "full", this.metrics.total.roundedMetrics) : this.mapService.updateMetrics(this, "full", this.metrics.totalNoCaprock.roundedMetrics);
       }
     });
-    
+
   }
 
 
@@ -2665,7 +2665,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
   upload(info: any, backoff: number = 1) {
     if(this.currentDataInitialized) {
-      
+
       this.verifyFilesAndGetData(info).then((data) => {
 
         //console.log(data);
@@ -2687,7 +2687,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           message += "Files are accepted as uploaded or contained within a zip folder."
           this.dialog.open(MessageDialogComponent, {data: {message: message, type: "Warning"}});
         }
-        
+
         if(info.shapes) {
           if(data.shapes != null) {
             if(info.shapeDetails.format == "custom") {
@@ -2713,7 +2713,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                     refLayer.addData(object);
                   })
                 })
-    
+
               }
               //else single element
               else {
@@ -2721,7 +2721,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                   refLayer.addData(object);
                 })
               }
-    
+
               refLayer.setStyle({
                 weight: 3,
                 opacity: 1,
@@ -2744,15 +2744,15 @@ export class MapComponent implements OnInit, AfterContentInit {
                 //console.log(data.shapes)
                 this.addUploadedLandcoverByShape(data.shapes, info.shapeDetails.properties.lc, info.overwrite);
               }
-              
+
             }
-            
+
           }
         }
 
         if(info.cover) {
           if(data.cover != null) {
-            
+
             let covData = this.types.landCover.data._covjson.ranges.cover.values;
 
             //backup values to restore on data failure
@@ -2786,7 +2786,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 //   changedIndexComponents.push([this.getComponents(i)])
                 //   subarrayCounter = 1;
                 // }
-                
+
 
                 //if overwriting base values, set value in baseData array
                 if(info.overwrite) {
@@ -2829,7 +2829,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 messageShown = true;
               }
 
-              
+
             }
 
             //need to slice up array since can only handle certain length, use forkjoin
@@ -2843,7 +2843,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
             //this 4x4 with fancy shapes seems to work now, so does 8x8...
             let geometries = this.generateGeometriesFromPoints(changedIndexComponents);
-            
+
             //debugging------------------------------------------------------------------------------------------------
 
             // let returnedIndices = [];
@@ -2860,7 +2860,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                   let x = recordBase.x;
                   let y = recordBase.y;
                   let index = this.getIndex(x, y);
-                  
+
                   //debugging------------------------------------------------------------------------------------------------
 
                   // returnedIndices.push({x: x, y: y});
@@ -2906,7 +2906,7 @@ export class MapComponent implements OnInit, AfterContentInit {
               //   let includes = returnedIndices.some((rp) => {
               //     return rp.x == point.x && rp.y == point.y;
               //   });
-                
+
               //   if(!includes) {
               //     this.DBService.indexSearch([point])
               //     .subscribe((data) => {
@@ -2917,7 +2917,7 @@ export class MapComponent implements OnInit, AfterContentInit {
               //     // .subscribe((data) => {
               //     //   console.log(data);
               //     // });
-                  
+
               //     if(missingPoints[point.x] == undefined) {
               //       missingPoints[point.x] = {
               //         min: point.y,
@@ -3018,7 +3018,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   }
 
 
-  
+
   generateGeometriesFromPoints(points: {x: number, y: number}[]) {
     let xrange = {
       min: Number.POSITIVE_INFINITY,
@@ -3059,9 +3059,11 @@ export class MapComponent implements OnInit, AfterContentInit {
     let cellWidth = xrange.max - xrange.min + 1;
     let cellHeight = yrange.max - yrange.min + 1;
     let maxCells = cellWidth * cellHeight;
-    let queryCellLimit = 10000;
-    //use half of query cell limit because faster for smaller queries
-    let imposedCellLimit = queryCellLimit / 2;
+    // let queryCellLimit = 10000;
+    // //use half of query cell limit because faster for smaller queries
+    // let imposedCellLimit = queryCellLimit / 2;
+    //using 1k as limit to allow better scalability due to smaller request sizes, faster response times also make up for the increase in requests
+    let imposedCellLimit = 500;
     let whRatio = cellWidth / cellHeight;
 
     let divisions = {
@@ -3090,7 +3092,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     let ys = this.types.landCover.data._covjson.domain.axes.get("y").values;
 
     let geometries = [];
-    
+
 
     //rectangles
     //-----------------------------------------------------------------------------------
@@ -3172,15 +3174,16 @@ export class MapComponent implements OnInit, AfterContentInit {
 
       }
     }
+    console.log(geometries.length);
 
-    
+
 
 
     //not rectangles
     //-----------------------------------------------------------------------------------------------------------------------
 
     // let maxURLLength = 2000;
-    
+
     // let divSizeGood = false;
     //might want to convert meters to lat or long measurement for minDistanceParallelLines
     // while(!divSizeGood) {
@@ -3204,7 +3207,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     // let xdivisions = [];
     // let ydivisions = [];
 
-    // 
+    //
     // for(let i = 0; i < divisions.x - 1; i++) {
     //   xdivisions.push({
     //     min: xrange.min + i * chunkSizeX,
@@ -3218,7 +3221,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     //   max: xrange.max
     // });
 
-    // 
+    //
     // for(let i = 0; i < divisions.y - 1; i++) {
     //   ydivisions.push({
     //     //subtract 1 so centroid within bounds
@@ -3300,7 +3303,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     // //console.log(yMapping);
     // //console.log(xMapping);
 
-    
+
 
     // //CAN ALSO MIRROR ON X SIDES (FOLLOW Y CONTOURS ON TOP AND BOTTOM) FOR TIGHTER BOUND
     // //only want to cutout in gaps between bottom two points and top two points rather than whole range
@@ -3333,7 +3336,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
     //         let coordLeft = MapComponent.proj4(MapComponent.utm, MapComponent.longlat, [xMinUTM, yUTM]);
     //         let coordRight = MapComponent.proj4(MapComponent.utm, MapComponent.longlat, [xMaxUTM, yUTM]);
-            
+
     //         //console.log(coordLeft);
 
     //         leftPoints.push(coordLeft);
@@ -3377,7 +3380,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     //     //console.log(leftPoints);
     //     let shape = rightPoints.concat(leftPoints);
     //     //shape = shape.concat(rightPoints);
-    //     // shape = shape.concat(leftPoints);  
+    //     // shape = shape.concat(leftPoints);
 
     //     //if only 4 points then no internal points
     //     if(shape.length > 4) {
@@ -3393,7 +3396,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     //         }
     //       });
     //     }
-    //     //console.log(shape); 
+    //     //console.log(shape);
     //   }
     // }
 
@@ -3424,13 +3427,13 @@ export class MapComponent implements OnInit, AfterContentInit {
     //   //console.log(geometry);
     //   let polyCoords = this.swapCoordinates(geometry.coordinates);
     //   this.addDrawnItem(L.polygon(polyCoords, {}));
-      
+
     //   //L.geoJSON(geojsonBounds).addTo(this.map);
     // });
     // let customTotal = this.getMetricsSuite(this.getInternalIndices(this.drawnItems.toGeoJSON(), {}).internal);
     // this.metrics.customAreasTotal.metrics = customTotal;
     // this.metrics.customAreasTotal.roundedMetrics = this.roundMetrics(customTotal);
-    
+
     // console.log(geometries);
 
     //-------------------------------------------------------------------------------
@@ -3455,10 +3458,10 @@ export class MapComponent implements OnInit, AfterContentInit {
   //   //lineBaseSeparation is hypotenuse inner triangle (triangle formed with perpendicular line between parallel lines to create triangle at parallelogram base)
   //   //need to find length of theta opposite side (inner triangle height)
   //   //this is the distance between the parallel lines
-  //   //wrong, probably actually want to 
+  //   //wrong, probably actually want to
   //   let innerTriangleHeight = lineBaseSeparation * Math.sin(theta);
-    
-    
+
+
   // }
 
 
@@ -3483,12 +3486,12 @@ export class MapComponent implements OnInit, AfterContentInit {
 
     let verifyAndParse = (zipped: boolean, file: any, format: string) => {
 
-      
+
 
       let verification = new Promise((accept, reject) => {
 
 
-        
+
         //wait until all previous items in the queue verified
         this.waitForAllComplete(this.fileHandler.working.slice(0, position)).then(() => {
 
@@ -3537,7 +3540,7 @@ export class MapComponent implements OnInit, AfterContentInit {
             if(zipped) {
 
               file.async('arraybuffer').then((data) => {
-                
+
                 test(data);
 
               });
@@ -3598,7 +3601,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                     return;
                   }
                 }
-                
+
                 accept({
                   //covjson has no nodata value
                   nodata: null,
@@ -3668,7 +3671,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 return;
               }
 
-              
+
               let xs = this.types.landCover.data._covjson.domain.axes.get("x").values;
               let ys = this.types.landCover.data._covjson.domain.axes.get("y").values;
 
@@ -3677,19 +3680,19 @@ export class MapComponent implements OnInit, AfterContentInit {
                 // console.log(x);
                 let diffx = x - this.xmin;
                 let diffy = y - this.ymin;
-  
+
 
                 //round to nearest 75
                 diffx = Math.round(diffx / 75) * 75;
                 diffy = Math.round(diffy / 75) * 75;
-  
+
                 //add to min offset and add 37.5 to get centroid
                 let xCellVal = this.xmin + 37.5 + diffx;
                 let yCellVal = this.ymin + 37.5 + diffy;
-  
+
                 // console.log(xs);
                 // console.log(xCellVal);
-                
+
                 //find index of cell with coordinates
                 return {
                   xIndex: xs.indexOf(xCellVal),
@@ -3698,7 +3701,7 @@ export class MapComponent implements OnInit, AfterContentInit {
               };
 
 
-              
+
               let minCentroid = getCentroidComponentIndices(xCorner, yCorner);
               //check if corner centroid valid, reject if it isn't
               if(minCentroid.xIndex < 0 || minCentroid.yIndex < 0) {
@@ -3713,7 +3716,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 //split on spaces, tabs, or commas for values
                 vals = vals.concat(details[i].split(/[ \t,]+/));
                 //console.log(details[i].length)
-                
+
                 //if whitespace at the end might reult in whitespace only element, remove these
                 if(vals[vals.length - 1].trim() == "") {
                   vals.splice(vals.length - 1, 1);
@@ -3737,7 +3740,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                   return;
                 }
               }
-          
+
               let getLocalIndex = (x, y) => {
                 return y * ncols + x;
               }
@@ -3757,7 +3760,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                   return;
                 }
 
-          
+
               //grid exact size, just accept with provided value grid
               if(cellSize == 75 && ncols == this.gridWidthCells && nrows == this.gridHeightCells) {
                 parsedData = {
@@ -3767,10 +3770,10 @@ export class MapComponent implements OnInit, AfterContentInit {
                 };
               }
               //otherwise need to insert values into full grid
-              else { 
+              else {
 
                 let getLocalComponentIndicesFromGlobalOffset = (globalXOffset, globalYOffset, scale) => {
-                  
+
                   let globalOffsetsFromLocalGrid = {
                     x: globalXOffset - minCentroid.xIndex,
                     //subtract on y axis since bottom to top (minCentroid's y index will be maximum value)
@@ -3789,7 +3792,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                     localXOffset = Math.floor(scale * globalOffsetsFromLocalGrid.x);
                     localYOffset = Math.floor(scale * globalOffsetsFromLocalGrid.y);
                   }
-                  
+
 
                   // //offset from local grid bounds, so compute global indices from this
                   // let globalXIndex = minCentroid.xIndex + globalXOffset;
@@ -3824,7 +3827,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 // console.log(vals.length);
                 // console.log(scale);
 
-                
+
                 // let last = 0;
                 //debugging
 
@@ -3852,7 +3855,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 }
               }
 
-              
+
               //if everything looks good accept, passing back the value array
               accept(parsedData);
             }
@@ -3893,13 +3896,13 @@ export class MapComponent implements OnInit, AfterContentInit {
             return;
           }
         });
-        
+
       });
 
       //push this functions promise into queue, get position in queue
       let position = this.fileHandler.working.push(verification);
 
-        
+
 
       return verification;
     }
@@ -3914,7 +3917,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         let numProcessed = 0;
 
         for(let i = 0; i < files.length; i++) {
-          let type = getType(files[i].name);      
+          let type = getType(files[i].name);
           //check if file extension indicates acceptible format
           if(acceptFormats.includes(type)) {
             //verify the file to be desired format
@@ -3932,7 +3935,7 @@ export class MapComponent implements OnInit, AfterContentInit {
               }
 
             });
-              
+
             }
             else {
               if(++numProcessed >= files.length) {
@@ -3941,7 +3944,7 @@ export class MapComponent implements OnInit, AfterContentInit {
               }
             }
           }
-          
+
         });
 
 
@@ -3952,7 +3955,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
       let zippedFiles = new Promise((accept, reject) => {
         //push this functions promise into queue, get position in queue
-        
+
         //wait until all previous items in the queue verified
         this.waitForAllComplete(this.fileHandler.working.slice(0, position)).then(() => {
           let files = [];
@@ -3986,7 +3989,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         });
       });
       let position = this.fileHandler.working.push(zippedFiles);
-      
+
       return zippedFiles;
     }
 
@@ -4055,7 +4058,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         // }
         //if no match check zip files
         //else {
-          
+
        // }
       });
     }
@@ -4069,7 +4072,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     - check top level files
     - check inside top level zip files
     - signal not found (only accept single level zipped)
-    
+
     processing:
     - read file, verify expected type
       - not expected type, reject and check next file in processing order
@@ -4078,7 +4081,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
 
     return new Promise<any>((accept, reject) => {
-      
+
       if(this.fileHandler.busy) {
         reject("Upload failed. Another upload is already in progress, please wait until this upload completes.")
       }
@@ -4119,7 +4122,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
               data.shapes = values;
               resolve();
-              
+
             }, (e) => {
               data.notFound.push("shapes");
               resolve();
@@ -4143,7 +4146,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
               data.cover = values;
               resolve();
-              
+
             }, (e) => {
               data.notFound.push("cover");
               resolve();
@@ -4155,7 +4158,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
-        
+
 
         Promise.all(parsing).then(() => {
           //reset working queue, don't want to remove inline since using Promise.all for coordination (if remove might mess up function)
@@ -4202,7 +4205,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           })
         });
       }
-      
+
     });
   }
 
@@ -4258,9 +4261,9 @@ export class MapComponent implements OnInit, AfterContentInit {
         let ys = this.types.landCover.data._covjson.domain.axes.get("y").values;
         let vals = type == "recharge" ? this.types.recharge.currentData[this.currentScenario] : this.types.landCover.data._covjson.ranges.cover.values;
         let fcontents;
-    
+
         switch(format) {
-          
+
           case "asc": {
             //generate header lines
             fcontents = "ncols " + this.gridWidthCells + "\n";
@@ -4278,7 +4281,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 convertedVal = this.numericRoundToDecimalPlaces(convertedVal * MapComponent.INCH_TO_MILLIMETER_FACTOR, 3);
               }
               fcontents += convertedVal + " "
-              
+
               //should have newline at the end of every row
               if(++colCounter >= this.gridWidthCells) {
                 fcontents += "\n";
@@ -4294,7 +4297,7 @@ export class MapComponent implements OnInit, AfterContentInit {
             }
             break;
           }
-          
+
           case "covjson": {
             let fname = type == "recharge" ? ((this.unitType == "Metric" ? type + "_millimeters_per_year" : type + "_inches_per_year") + this.scenarioFnames[this.currentScenario] + "." + format) : type + "." + format;
             return {
@@ -4351,11 +4354,11 @@ export class MapComponent implements OnInit, AfterContentInit {
             });
 
             //console.log("complete");
-            
+
             let shapes = L.geoJSON(cells).toGeoJSON();
 
             let zip = new JSZip();
-            
+
             this.modShpWrite.writePolygons(shapes, (err, files) => {
               let fileName = "DefinedAreas";
               zip.file(fileName + '.shp', files.shp.buffer, { binary: true });
@@ -4397,7 +4400,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           })
         }
       };
-      
+
 
       //let __this = this;
 
@@ -4417,16 +4420,16 @@ export class MapComponent implements OnInit, AfterContentInit {
           i++;
         });
         //console.log(shapes);
-    
-        
+
+
         //console.log(shapes);
         //let polygons = shpWriteGeojson.polygon(shapes);
 
         // if(shapes.type.toLowerCase() != "featurecollection") {
         //   throw new Error("Invalid shapefile download");
         // } probably don't need this check, if no feature list will throw error anyway (should never happen regardless)
-        
-        
+
+
         this.modShpWrite.writePolygons(shapes, (err, files) => {
           let fileName = "DefinedAreas";
           zip.file(fileName + '.shp', files.shp.buffer, { binary: true });
@@ -4458,7 +4461,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         });
       }
 
-      
+
 
       if(info.recharge) {
 
@@ -4534,7 +4537,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
   }
 
-  
+
 
 
 
@@ -4811,7 +4814,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     //   //clone base options
     //   MapComponent.baseStyle = JSON.parse(JSON.stringify(layer.options));
     // }
-    this.addInteractionToLayer(layer, false, this); 
+    this.addInteractionToLayer(layer, false, this);
 
     let info = {
       name: "",
@@ -4841,9 +4844,9 @@ export class MapComponent implements OnInit, AfterContentInit {
     //   }
     // }
     // this.webWorker.run(workerGetInternalIndices, args).then((indices) => {
-    //   
+    //
 
-    //   
+    //
     // }, (error) => {
     //   console.log(error);
     // });
@@ -4855,9 +4858,9 @@ export class MapComponent implements OnInit, AfterContentInit {
     info.metrics = itemMetrics;
     info.roundedMetrics = this.roundMetrics(itemMetrics);
     this.metrics.customAreas.push(info);
-    
 
-    
+
+
 
     if(updateCustomTotal) {
       this.mapService.setLoading(this, true);
@@ -4892,9 +4895,9 @@ export class MapComponent implements OnInit, AfterContentInit {
         this.metrics.customAreasTotal.roundedMetrics = this.roundMetrics(customTotal);
         this.mapService.setLoading(this, false);
       });
-      
+
     }
-    
+
   }
 
 
@@ -4947,7 +4950,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     this.map.invalidateSize();
   }
 
-  
+
   private updateRecharge(geojsonObjects: any, dataHandler: any, errorHandler: any) {
     let numItems = geojsonObjects.features.length;
     //console.log(geojsonObjects);
@@ -4979,7 +4982,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       .subscribe((data) => {
         let optime = new Date().getTime()
         console.log("Operation took " + (optime - start).toString() + "ms");
-        
+
         dataHandlerReadyCheck(1, data).then(() => {
           console.log("Data handler took " + (new Date().getTime() - optime).toString() + "ms");
           this.mapService.setLoading(this, false);
@@ -4995,7 +4998,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
   //too many queries, breaks everything
   private letsTryPointsAgain(points: {x: number, y: number}[], dataHandler: any, errorHandler: any) {
-    
+
     //console.log(geojsonObjects);
     if (points.length != 0) {
 
@@ -5050,7 +5053,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     // console.log(this.highlightedItems.toGeoJSON())
     this.updateCoverByShape(this.highlightedItems.toGeoJSON(), convertedType, options);
   }
-  
+
 
   //type should be advanced, base, shape,
   //shape should have options including landcover code
@@ -5064,7 +5067,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     let covData = this.types.landCover.data._covjson.ranges.cover.values;
     let overwrite = options.overwrite == undefined ? false : options.overwrite;
     switch(type) {
-      
+
       case "shape": {
         let lc = options.code;
         if(lc == undefined) {
@@ -5086,7 +5089,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         // let hasBackground = featureIndices.some((details) => {
         //   return details.background.length > 0;
         // });
-    
+
         if(indices.background > 0) {
           this.dialog.open(MessageDialogComponent, {data: {message: "Background cells have been selected.\nPlease note that changes to background cells will not be included.", type: "Warning"}});
         }
@@ -5103,7 +5106,7 @@ export class MapComponent implements OnInit, AfterContentInit {
               }
             }
           });
-          
+
           //reload layer from changes
           this.loadCover(this.types.landCover, false);
           resolve();
@@ -5117,9 +5120,9 @@ export class MapComponent implements OnInit, AfterContentInit {
                 let x = recordBase.x;
                 let y = recordBase.y;
                 let index = this.getIndex(x, y);
-                
+
                 let mappedType = covData[index];
-  
+
                 Object.keys(this.types.recharge.currentData).forEach((scenario) => {
                   //background is not included in the database so indices shifted by 1
                   //if background type set recharge rate to 0
@@ -5151,7 +5154,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         // console.log(this.types.landCover);
         // //reload layer from changes
         // this.loadCover(this.types.landCover, false);
-        
+
         break;
       }
       case "advanced": {
@@ -5211,7 +5214,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                   else if(overwrite) {
                     this.types.landCover.baseData[index] = covData[index];
                   }
-                  
+
                 });
                 //reload layer from changes
                 this.loadCover(this.types.landCover, false);
@@ -5229,7 +5232,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                       let y = recordBase.y;
                       let index = this.getIndex(x, y);
                       //does the array include base? if not have to shift
-      
+
                       //coverage reassignment completed first, so use this value (covData[index]) to get index in db results
                       let mappedType = covData[index];
 
@@ -5249,7 +5252,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                   this.updateMetrics(geojsonObjects);
                   this.loadRechargeStyle(this.types.recharge.style);
                 });
-                
+
               }, (error) => {
                 //restore land cover on failure
                 backupData.forEach((value, i) => {
@@ -5257,7 +5260,7 @@ export class MapComponent implements OnInit, AfterContentInit {
                 });
                 this.loadCover(this.types.landCover, false);
               });
-              
+
             }
 
             //save state
@@ -5282,11 +5285,11 @@ export class MapComponent implements OnInit, AfterContentInit {
         this.loadRechargeStyle(this.types.recharge.style);
         break;
       }
-      
+
       default: {
         throw new Error("Unexpected cover update type");
       }
-      
+
     }
 
     if(options.unhighlight) {
@@ -5303,7 +5306,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         this.highlightedItems.removeLayer(layer);
       });
     }
-      
+
   }
 
 
@@ -5311,7 +5314,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   //optimizations in repackaging algorithm should balance out unoptimal configuarations reasonably well (cases where features are non-overlapping)
   //just return bool in case need indices for something else before repackaging (advanced mapping...)
   private checkRepackageShapes(geojsonObjects: any, featureIndices: {internal: number[], background: number}[]): boolean {
-    
+
     let repackage = false;
 
     for(let i = 0; i < featureIndices.length; i++) {
@@ -5358,7 +5361,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     if(options.breakdown) {
       indices.breakdown = [];
     }
-    
+
     geojsonObjects.features.forEach((feature) => {
       if(options.breakdown) {
         let featureIndices: any = {
@@ -5370,7 +5373,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           mechanisms.breakdownBackground = () => { featureIndices.background++; }
         }
         indices.breakdown.push(featureIndices);
-        
+
       }
       //if not a feature return
       if(feature.type.toLowerCase() != "feature") {
@@ -5395,7 +5398,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     conversions.forEach((conversion) => {
       conversion();
     });
-    
+
     return indices;
   }
 
@@ -5466,7 +5469,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
     //-----------------end pre-processing-------------------
 
-      
+
 
     //convert max min values and find range of cells
     //no need to check every single one
@@ -5490,7 +5493,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     //check if ascending or descending order, findIndex returns first occurance
     if(xs[0] < xs[1]) {
       minxIndex = Math.max(xs.findIndex((val) => { return val >= xmin }), 0);
-      //> not >= so returns index after last even if on edge 
+      //> not >= so returns index after last even if on edge
       maxxIndex = xs.findIndex((val) => { return val > xmax });
       if(maxxIndex < 0) {
         maxxIndex = this.gridWidthCells;
@@ -5724,8 +5727,8 @@ export class MapComponent implements OnInit, AfterContentInit {
         clickLayers(layers);
       }
     }
-    
-    
+
+
     //this.mapService.updateSelect(this, this.drawnItems.getLayers().length, this.highlightedItems.getLayers().length);
   }
 
@@ -5815,7 +5818,7 @@ export class MapComponent implements OnInit, AfterContentInit {
           upperRaw *= MapComponent.INCH_TO_MILLIMETER_FACTOR
           lowerRaw *= MapComponent.INCH_TO_MILLIMETER_FACTOR
         }
-        
+
         let units = (this.unitType == "Metric" ? "Milimeters per Year" : "Inches per Year")
         let upper = this.roundToDecimalPlaces(upperRaw, 2) + "+";
         let lower = this.roundToDecimalPlaces(lowerRaw, 2) + "-";
@@ -5824,7 +5827,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       }
     }
     //console.log(this.unitType);
-    
+
   }
 
   addLegend(palette: string[], range: string[], title: string, units: string) {
@@ -5875,7 +5878,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       + "</div>";
       div.innerHTML += html;
       return div;
-      
+
     };
     legend.addTo(this.map);
     return legend;
@@ -5908,7 +5911,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     if(this.scenariosInitialized) {
       this.currentScenario = type;
       this.baseScenario = updateBase ? type : "recharge_scenario0";
-  
+
       this.mapService.setLoading(this, true);
       this.createMetrics().then((data) => {
         this.metrics = data;
@@ -6075,7 +6078,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   // private landCoverPalette(): string[] {
 
   //   let palette = [];
-    
+
   //   let r = (chroma as any).scale(["#ff0000", "#000000"]).mode('lab').colors(4);
   //   let g = (chroma as any).scale(["#00ff00", "#000000"]).mode('lab').colors(3);
   //   let b = (chroma as any).scale(["#0000ff", "#000000"]).mode('lab').colors(3);
@@ -6165,7 +6168,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   //       b: Math.ceil(colorScale[0].b - i * sizes.b)
   //     });
   //   }
-    
+
   //   rgb.forEach((color, i) => {
   //     for(let j = 0; j < i + 1; j++) {
   //       palette.push(this.rgbToHex(color));
@@ -6252,7 +6255,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   //     palette = palette.concat((chroma as any).scale([colorSegments[i], colorSegments[i + 1]]).mode('lab').colors(numColors));
   //   }
   //   //console.log(palette);
-      
+
   //   // let last = palette.length * 1.5;
   //   // for(let i = 0; i < last; i++) {
   //   //   palette.push(palette[palette.length - 1]);
@@ -6271,7 +6274,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     //let colors = ["#fff7fb", "#ece7f2", "#d0d1e6", "#a6bddb", "#74a9cf", "#3690c0", "#0570b0", "#045a8d", "#023858"];
     //let colors = ["#fff7fb", "#023858"];
     //let colors = ["#a50026", "#313695"];
-    
+
     //linear segments
     let colorSegments = (chroma as any).scale(colors).mode('lab').colors(9);
     //colorbrewer segments
@@ -6285,7 +6288,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       palette = palette.concat((chroma as any).scale([colorSegments[i], colorSegments[i + 1]]).mode('lab').colors(numColors));
     }
     //console.log(palette);
-      
+
     // let last = palette.length * 1.5;
     // for(let i = 0; i < last; i++) {
     //   palette.push(palette[palette.length - 1]);
@@ -6306,7 +6309,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   }
 
   //assumes palette range doesnt't extend past palette extremes
-  paletteWindow(palette: string[], paletteRange: number[], paletteExtremes: number[], paletteVals: number) {   
+  paletteWindow(palette: string[], paletteRange: number[], paletteExtremes: number[], paletteVals: number) {
     let cdiff = (paletteExtremes[1] - paletteExtremes[0]) / paletteVals;
     let botdiff = Math.ceil((paletteRange[0] - paletteExtremes[0]) / cdiff);
     let topdiff = Math.ceil((paletteExtremes[1] - paletteRange[1]) / cdiff);
@@ -6333,7 +6336,7 @@ export class MapComponent implements OnInit, AfterContentInit {
   }
 
   private generateColorRaster(type: "lc"| "rc", aquifer?: number, caprock?: number): number[][][] {
-    
+
     let value2color = (value: number, range: [number, number], palette: {blue: number[], green: number[], red: number[]}): [number, number, number, number] => {
       let offset = value - range[0];
       let span = range[1] - range[0];
@@ -6342,7 +6345,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       let bucket = Math.min(Math.floor(offset / bucketSpan), buckets - 1);
       return [palette.red[bucket], palette.green[bucket], palette.blue[bucket], 255];
     }
-    
+
     let raster = [];
     let row;
     let values;
@@ -6373,7 +6376,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     let bucket = Math.floor(offset / bucketSpan);
     let isBackground = (value: number): boolean => {
       let background = false;
-      switch(type) {  
+      switch(type) {
         case "lc": {
           background = value == 0;
           break;
@@ -6527,10 +6530,10 @@ export class MapComponent implements OnInit, AfterContentInit {
   //maximum of 2 colors blended per cell, if scale < .5 then in between colors are just left out
   //blend left to right, up to down
   private generatePNG(width: number, height: number, raster: number[][][]) {
-    
+
     let rWidth = raster[0].length;
     let rHeight = raster.length;
-    
+
     let wScale = width / rWidth;
     let hScale = height / rHeight;
     //maintain aspect ratio (rest of pixels if one side longer will be background)
@@ -6632,9 +6635,9 @@ export class MapComponent implements OnInit, AfterContentInit {
   //   let indices = [];
   //   let start
   //   {
-  //     sharedWith: 
+  //     sharedWith:
   //   }
-    
+
   // }
 }
 
