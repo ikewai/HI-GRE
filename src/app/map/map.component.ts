@@ -2,10 +2,7 @@ import { Component, OnInit, AfterContentInit, ViewChild, ElementRef, EventEmitte
 import { MapService } from '../map/shared/map.service';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { Grid } from './shared/grid';
-import { Cover } from './shared/cover';
 import { DBConnectService } from './shared/dbconnect.service';
-import { isNullOrUndefined } from 'util';
 import 'rxjs/add/observable/forkJoin';
 import { Observable } from 'rxjs';
 //import { CovDetailsService } from 'app/map/shared/cov-details.service';
@@ -18,7 +15,6 @@ import * as JSZip from 'jszip'
 import * as shpWritePrj from '../../../node_modules/shp-write/src/prj';
 import { saveAs } from 'file-saver';
 import { WindowService } from '../window/shared/window.service';
-import { WindowPanel } from '../window/shared/windowPanel';
 import { isGeoJSONObject } from 'geojson-validation'
 import { MessageDialogComponent } from "../message-dialog/message-dialog.component"
 import {MatDialog} from "@angular/material";
@@ -768,7 +764,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     //backup values to restore on data failure
     let backupData = Array.from(covData);
 
-    let covRemap = new Promise((resolve) => {
+    let covRemap = new Promise<void>((resolve) => {
 
       lcShapes.features.forEach((shape, i) => {
         //default property is lcCode, add advanced option to upload where can specify
@@ -1345,8 +1341,8 @@ export class MapComponent implements OnInit, AfterContentInit {
       return Promise.all(tasks);
     };
 
-    let initializeRemainingScenarios = (): Promise<any> => {
-      return new Promise<any>((resolve) => {
+    let initializeRemainingScenarios = (): Promise<void> => {
+      return new Promise<void>((resolve) => {
         Object.keys(MapComponent.rechargeFiles).forEach((scenario) => {
           //current scenario already processed
           if(scenario != this.currentScenario) {
@@ -1441,7 +1437,7 @@ export class MapComponent implements OnInit, AfterContentInit {
       return Promise.all(workerPromises).then((data) => {
         this.caprock = data[0];
         this.aquifers = data[1];
-        return new Promise((resolve) => {
+        return new Promise<void>((resolve) => {
           this.loadDrawControls();
           this.mapService.setLoading(this, true);
           this.createMetrics().then((data) => {
@@ -4116,7 +4112,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         let parsing = []
 
         if(info.shapes) {
-          parsing.push(new Promise((resolve) => {
+          parsing.push(new Promise<void>((resolve) => {
 
             process("shapes").then((values) => {
 
@@ -4140,7 +4136,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
 
         if(info.cover) {
-          parsing.push(new Promise((resolve) => {
+          parsing.push(new Promise<void>((resolve) => {
 
             process("cover").then((values) => {
 
@@ -4184,7 +4180,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
 
   private waitForAllComplete(promises: Promise<any>[]): Promise<any> {
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       //just in case new promises added to array, otherwise might never resolve
       let numPromises = promises.length;
       let complete = 0;
@@ -4957,7 +4953,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     if (numItems != 0) {
       //recharge value handling requires all scenarios are loaded, so wait until complete
       let dataHandlerReadyCheck = (backoff, data) => {
-        return new Promise((resolve) => {
+        return new Promise<void>((resolve) => {
           if(this.scenariosInitialized) {
             dataHandler(data);
             resolve();
@@ -5097,7 +5093,7 @@ export class MapComponent implements OnInit, AfterContentInit {
         //backup values to restore on data failure
         let backupData = Array.from(covData);
 
-        let covRemap = new Promise((resolve) => {
+        let covRemap = new Promise<void>((resolve) => {
           internalIndices.forEach((index) => {
             if(covData[index] != 0) {
               covData[index] = lc;
@@ -5189,7 +5185,7 @@ export class MapComponent implements OnInit, AfterContentInit {
 
               let queryObjects = repackage ? this.repackageIndices(internalIndices) : geojsonObjects;
 
-              let covRemap = new Promise((resolve) => {
+              let covRemap = new Promise<void>((resolve) => {
                 internalIndices.forEach((index) => {
                   //set to default type
                   let mappedType = data.mapping.default;

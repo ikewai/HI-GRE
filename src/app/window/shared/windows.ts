@@ -1,3 +1,3 @@
-import { WindowPanel } from './WindowPanel';
+import { WindowPanel } from './windowPanel';
 
 export const WINDOWS: WindowPanel[] = [];

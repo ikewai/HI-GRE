@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WindowPanel } from './WindowPanel';
+import { WindowPanel } from './windowPanel';
 import { WINDOWS } from './windows';
 
 @Injectable()

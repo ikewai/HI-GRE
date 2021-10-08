@@ -8,7 +8,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "init": "sed -i \"s/require('jszip')/require('..\\/node_modules\\/jszip')/\" ./node_modules/shpjs/lib/unzip.js"
   },
   "private": true,
   "dependencies": {

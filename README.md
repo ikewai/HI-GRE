@@ -1,3 +1,8 @@
+# Initialization
+
+- Run `npm install` to install dependencies
+- Run `npm run init` to fix shpjs module dependency issues (without this Aquifer and Caprock shapefiles will not load)
+
 # AngularDST
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.1.2.

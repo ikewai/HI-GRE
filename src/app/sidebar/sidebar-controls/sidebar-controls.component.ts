@@ -24,7 +24,7 @@ import {DownloadDialogComponent} from "../download-dialog/download-dialog.compon
 })
 export class SidebarControlsComponent implements OnInit {
 
-  
+
   @ViewChild("menu") menuDiv;
   @ViewChild("leftScrollbar") leftScrollbarDiv;
   @ViewChild("nameInput") nameInput;
@@ -74,7 +74,7 @@ export class SidebarControlsComponent implements OnInit {
       this.scrollbarWidth = this.menuDiv.nativeElement.offsetWidth - this.menuDiv.nativeElement.clientWidth;
       this.elementRef.nativeElement.style.setProperty("--control-scrollbar-width", (this.scrollbarWidth).toString() + "px");
     }, 0);
-    
+
     // console.log(this.leftScrollbarDiv.nativeElement.clientWidth);
     // console.log(scrollbarWidth);
     this.elementRef.nativeElement.style.setProperty("--scrollheight", this.menuDiv.nativeElement.scrollHeight + 20 + "px");
