@@ -2883,6 +2883,10 @@ export class MapComponent implements OnInit, AfterContentInit {
                     //debugging------------------------------------------------------------------------------------------------
 
                     this.types.recharge.currentData[scenario][index] = recordValue;
+
+                    if(info.overwrite) {
+                      this.types.recharge.baseData[scenario][index] = recordValue;
+                    }
                   });
 
                 });
