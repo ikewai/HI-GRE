@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/build_extras/.git
 
 # dependencies
 /node_modules

@@ -20,17 +20,13 @@ export class BrowserGuard implements CanActivate {
 
   getBrowserCompatible(): boolean {
     let isCompatible = false;
-    let compatibleBrowsers = ["chrome", "firefox", "safari"];
-    let name = Platform.name.toLowerCase();
+    let compatibleBrowsers = new Set<string>(["chrome", "firefox", "safari"]);
+    console.log(Platform.name.toLowerCase().split(" ")[0]);
+    let name = Platform.name.toLowerCase().split(" ")[0];
     if(name == undefined) {
       name = "other";
     }
-    for(let i = 0; i < compatibleBrowsers.length; i++) {
-      if(compatibleBrowsers[i] == name) {
-        isCompatible = true;
-        break;
-      }
-    }
+    isCompatible = compatibleBrowsers.has(name);
     return isCompatible;
   }
 }
