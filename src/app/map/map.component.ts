@@ -3062,7 +3062,7 @@ export class MapComponent implements OnInit, AfterContentInit {
     // let queryCellLimit = 10000;
     // //use half of query cell limit because faster for smaller queries
     // let imposedCellLimit = queryCellLimit / 2;
-    //using 1k as limit to allow better scalability due to smaller request sizes, faster response times also make up for the increase in requests
+    //using 500 as limit to allow better scalability due to smaller request sizes, faster response times also make up for the increase in requests
     let imposedCellLimit = 500;
     let whRatio = cellWidth / cellHeight;
 

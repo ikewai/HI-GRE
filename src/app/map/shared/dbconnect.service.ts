@@ -9,6 +9,7 @@ import { map, retry, catchError, mergeMap } from 'rxjs/operators';
 export class DBConnectService {
 
   static readonly TOKEN_FILE = "/assets/APIToken.txt"
+  static readonly API_URL = "https://api.hcdp.ikewai.org/higre/query"
   static readonly MAX_URI = 2000;
   static readonly MAX_POINTS = 500;
 
@@ -23,15 +24,14 @@ export class DBConnectService {
   }
 
   spatialQueryLength(geometry: any): number {
-    let query = "{'$and':[{'name':'Landuse'},{'value.name':'dataset02172019'},{'value.loc': {$geoWithin: {'$geometry':"+JSON.stringify(geometry).replace(/"/g,'\'')+"}}}]}";
-    let url = "https://agaveauth.its.hawaii.edu:443/meta/v2/data?q=" + encodeURI(query) + "&limit=" + DBConnectService.MAX_POINTS + "&offset=0";
+    let query = `{"$and":[{"name":"Landuse"},{"value.name":"dataset02172019"},{"value.loc": {"$geoWithin": {"$geometry":${JSON.stringify(geometry)}}}}]}`;
+    let url = `${DBConnectService.API_URL}?q=${encodeURI(query)}&limit=${DBConnectService.MAX_POINTS}&offset=0`;
     return url.length;
   }
 
   debugQuery() {
     console.log("called debug query");
-    let sampleQuery = "{'$and':[{'name':'Landuse'},{'value.name':'dataset02172019'},{'value.loc': {$geoWithin: {'$geometry':{'type':'Polygon','coordinates':[[[-158.068537,21.465326],[-158.068537,21.54625],[-157.926289,21.54625],[-157.926289,21.465326],[-158.068537,21.465326]]]}}}}]}";
-    let url = "https://agaveauth.its.hawaii.edu:443/meta/v2/data?q="+encodeURI(sampleQuery)+"&limit=" + DBConnectService.MAX_POINTS + "&offset=0";
+    let sampleQuery = `{"$and":[{"name":"Landuse"},{"value.name":"dataset02172019"},{"value.loc": {"$geoWithin": {"$geometry":{"type":"Polygon","coordinates":[[[-158.068537,21.465326],[-158.068537,21.54625],[-157.926289,21.54625],[-157.926289,21.465326],[-158.068537,21.465326]]]}}}}]}`;    let url = `${DBConnectService.API_URL}?q=${encodeURI(sampleQuery)}&limit=${DBConnectService.MAX_POINTS}&offset=0`;
     let head = new HttpHeaders()
     .set("Authorization", "Bearer " + this.oAuthAccessToken)
     .set("Content-Type", "application/x-www-form-urlencoded");
@@ -39,20 +39,16 @@ export class DBConnectService {
       headers: head
     };
 
-    this.http.get<ResponseResults>(url, options)
+    this.http.get<Cover[]>(url, options)
     .pipe(
       retry(3),
-      map((data) => {
-        data.result.forEach((record) => {
+      map((data: Cover[]) => {
+        data.forEach((record) => {
           this.sanityCheck(record);
         });
         console.log("debug query complete");
       })
     ).subscribe();
-
-    interface ResponseResults {
-      result: any
-    }
   }
 
   sanityCheck(record: any) {
@@ -80,8 +76,8 @@ export class DBConnectService {
   }
 
   spatialSearch(geometry: any, offset: number = 0, resultSet = []): Observable<Cover[]> {
-    let query = "{'$and':[{'name':'Landuse'},{'value.name':'dataset02172019'},{'value.loc': {$geoWithin: {'$geometry':"+JSON.stringify(geometry).replace(/"/g,'\'')+"}}}]}";
-    let url = "https://agaveauth.its.hawaii.edu:443/meta/v2/data?q="+encodeURI(query)+"&limit=" + DBConnectService.MAX_POINTS + "&offset=" + offset.toString();
+    let query = `{"$and":[{"name":"Landuse"},{"value.name":"dataset02172019"},{"value.loc": {"$geoWithin": {"$geometry":${JSON.stringify(geometry)}}}}]}`;
+    let url = `${DBConnectService.API_URL}?q=${encodeURI(query)}&limit=${DBConnectService.MAX_POINTS}&offset=${offset.toString()}`;
     // console.log(query);
     // console.log(url);
     let head = new HttpHeaders()
@@ -91,14 +87,13 @@ export class DBConnectService {
       headers: head
     };
 
-    let response = this.http.get<ResponseResults>(url, options)
+    let response = this.http.get<Cover[]>(url, options)
     .pipe(
       retry(3),
-      mergeMap((data) => {
-        let localResult = data.result as Cover[]
-        let result = resultSet.concat(localResult);
+      mergeMap((data: Cover[]) => {
+        let result = resultSet.concat(data);
         //console.log(localResult);
-        if(localResult.length >= DBConnectService.MAX_POINTS) {
+        if(data.length >= DBConnectService.MAX_POINTS) {
           //console.log("next");
           return this.spatialSearch(geometry, offset + DBConnectService.MAX_POINTS, result);
         }
@@ -108,60 +103,27 @@ export class DBConnectService {
         }
       }),
       catchError((e) => {
+        console.error(e);
         return Observable.throw(new Error(e.message));
       })
     );
 
     return response;
-
-    interface ResponseResults {
-      result: any
-    }
   }
-
-  // spatialSearch(geometry: any): Observable<Cover[]> {
-  //   //console.log(JSON.stringify(JSON.stringify(geometry.coordinates[0].slice(0, geometry.coordinates[0].length - 1)).replace(/"/g,'\'')));
-  //   let query = "{'$and':[{'name':'Landuse'},{'value.name':'testset10092018'},{'value.loc': {$geoWithin: {'$polygon':"+JSON.stringify(geometry.coordinates[0].slice(0, geometry.coordinates[0].length - 1)).replace(/"/g,'\'')+"}}}]}";
-  //   //console.log(query);
-  //   let url = "https://agaveauth.its.hawaii.edu:443/meta/v2/data?q="+encodeURI(query)+"&limit=" + DBConnectService.MAX_POINTS + "&offset=0";
-  //   let head = new HttpHeaders()
-  //   .set("Authorization", "Bearer " + this.oAuthAccessToken)
-  //   .set("Content-Type", "application/x-www-form-urlencoded");
-  //   let options = {
-  //     headers: head
-  //   };
-
-  //   let response = this.http.get<ResponseResults>(url, options)
-  //   .retry(3)
-  //   .map((data) => {
-  //     return data.result as Cover[];
-  //   }).catch((e) => {
-  //     return Observable.throw(new Error(e.message));
-  //   });
-  //   return response;
-  //   // }
-
-  //   interface ResponseResults {
-  //     result: any
-  //   }
-  // }
 
 
   indexSearch(indexes: {x: number, y: number}[]): Observable<Cover[]> {
     //this will use the 0 indexed feature from the leaflet map, which should be a GeoJSON polygon, for the spatial search boundry
-    //for(let i = 0; i < size; i++) {
-    //alert(JSON.stringify(drawnItems.toGeoJSON().features[i].geometry));
 
     //build query
-    let query = "{$and:[{'name':'Landuse','value.name':'dataset02172019','$or':[";
-    indexes.forEach((index) => {
-      query += "{'value.x':" + index.x + ", 'value.y':" + index.y + "},";
-    });
-    //remove last comma
-    query = query.slice(0, -1);
-    query += "]}]}";
+    let indexQueryParts = [];
+    for(let index of indexes) {
+      indexQueryParts.push(`{"value.x":${index.x},"value.y":${index.y}}`);
+    }
+    let indexQueryJoined = indexQueryParts.join(",");
+    let query = `{"$and":[{"name":"Landuse","value.name":"dataset02172019","$or":[${indexQueryJoined}]}]}`;
 
-    let url = "https://agaveauth.its.hawaii.edu:443/meta/v2/data?q="+encodeURI(query)+"&limit=" + DBConnectService.MAX_POINTS + "&offset=0";
+    let url = `${DBConnectService.API_URL}?q=${encodeURI(query)}&limit=${DBConnectService.MAX_POINTS}&offset=0`;
     let head = new HttpHeaders()
     .set("Authorization", "Bearer " + this.oAuthAccessToken)
     .set("Content-Type", "application/x-www-form-urlencoded");
@@ -169,11 +131,11 @@ export class DBConnectService {
       headers: head
     };
 
-    let response = this.http.get<ResponseResults>(url, options)
+    let response = this.http.get<Cover[]>(url, options)
     .pipe(
       retry(3),
       map((data) => {
-        return data.result as Cover[];
+        return data;
       }),
       catchError((e) => {
         return Observable.throw(new Error(e.message));
@@ -181,10 +143,5 @@ export class DBConnectService {
     );
 
     return response;
-
-
-    interface ResponseResults {
-      result: any
-    }
   }
 }
